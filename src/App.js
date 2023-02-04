@@ -23,6 +23,9 @@ import EntryModal from './components/EntryModal';
 import { mainListItems } from './components/listItems';
 import { db, SignInScreen } from './utils/firebase';
 import { emptyEntry } from './utils/mutations';
+import { getDocs } from "firebase/firestore";
+
+
 
 // MUI styling constants
 
@@ -110,14 +113,13 @@ export default function App() {
 
     // ! Database query filters entries for current user. DO NOT CHANGE, editing this query may cause it to fail.
     const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
-    console.log(q);
 
     /* NOTE: onSnapshot allows the page to update automatically whenever there is 
     an update to the database. This means you do not have to manually update
     the page client-side after making an add/update/delete. The page will automatically
     sync with the database! */
     onSnapshot(q, (snapshot) => {
-      console.log(snapshot);
+      
       // Set Entries state variable to the current snapshot
       // For each entry, appends the document ID as an object property along with the existing document data
       setEntries(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))
@@ -126,6 +128,45 @@ export default function App() {
 
   // Main content of homescreen. This is displayed conditionally from user auth status
 
+  const exportData = () => {
+    getLinks();
+  };
+
+  var textFile = null,
+  makeTextFile = function (text) {
+    var data = new Blob([text], {type: 'text/plain'});
+
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    // returns a URL you can use as a href
+    return textFile;
+  };
+
+  var links = "";
+
+  async function getLinks() {
+    const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
+    const querySnapshot = await getDocs(q);
+    links = "";
+    querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    links += (doc.id, " => ", doc.data().link) + '\n';
+    });
+
+    var url = makeTextFile(links);
+
+    const link = document.createElement("a");
+    link.download = url;
+    link.href = url;
+    link.click();
+  }
+
   function mainContent() {
     if (isSignedIn) {
       return (
@@ -133,6 +174,7 @@ export default function App() {
           <Grid item xs={12}>
             <Stack direction="row" spacing={3}>
               <EntryModal entry={emptyEntry} type="add" user={currentUser} />
+              <Button onClick={exportData}>Export Links</Button>
             </Stack>
           </Grid>
           <Grid item xs={12}>

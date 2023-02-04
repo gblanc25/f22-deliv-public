@@ -26,11 +26,7 @@ export async function addEntry(entry) {
 
 export async function updateEntry(entry) {
 
-   console.log(entry.id);
-
    const oldEntry = doc(db, "entries", entry.id);
-
-   console.log(entry.link);
 
    await updateDoc(oldEntry, {
       name: entry.name,
