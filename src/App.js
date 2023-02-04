@@ -110,12 +110,14 @@ export default function App() {
 
     // ! Database query filters entries for current user. DO NOT CHANGE, editing this query may cause it to fail.
     const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
+    console.log(q);
 
     /* NOTE: onSnapshot allows the page to update automatically whenever there is 
     an update to the database. This means you do not have to manually update
     the page client-side after making an add/update/delete. The page will automatically
     sync with the database! */
     onSnapshot(q, (snapshot) => {
+      console.log(snapshot);
       // Set Entries state variable to the current snapshot
       // For each entry, appends the document ID as an object property along with the existing document data
       setEntries(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))

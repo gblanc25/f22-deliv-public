@@ -17,6 +17,7 @@ export default function EntryTable({ entries }) {
          <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
                <TableRow>
+                  <TableCell></TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell align="right">Link</TableCell>
                   <TableCell align="right">User</TableCell>
@@ -30,6 +31,9 @@ export default function EntryTable({ entries }) {
                      key={entry.id}
                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
+                     <TableCell sx={{ "padding-top": 0, "padding-bottom": 0 }} align="left">
+                        <EntryModal entry={entry} type="delete" />
+                     </TableCell>
                      <TableCell component="th" scope="row">
                         {entry.name}
                      </TableCell>

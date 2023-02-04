@@ -1,4 +1,5 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -14,6 +15,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import { categories } from '../utils/categories';
 import { addEntry } from '../utils/mutations';
+import { deleteEntry } from '../utils/mutations';
+import { updateEntry } from '../utils/mutations';
 
 // Modal component for individual entries.
 
@@ -46,9 +49,25 @@ export default function EntryModal({ entry, type, user }) {
       setCategory(entry.category);
    };
 
+   const handleDelete = () => {
+      deleteEntry(entry).catch(console.error);
+   };
+
    const handleClose = () => {
       setOpen(false);
    };
+
+   const handleEdit = () => {
+      const updatedEntry = {
+         name: name,
+         link: link,
+         description: description,
+         category: category,
+         id: entry.id,
+      };
+      updateEntry(updatedEntry).catch(console.error);
+      handleClose();
+   }
 
    // Mutation handlers
 
@@ -68,8 +87,6 @@ export default function EntryModal({ entry, type, user }) {
 
    // TODO: Add Edit Mutation Handler
 
-   // TODO: Add Delete Mutation Handler
-
    // Button handlers for modal opening and inside-modal actions.
    // These buttons are displayed conditionally based on if adding or editing/opening.
    // TODO: You may have to edit these buttons to implement editing/deleting functionality.
@@ -83,10 +100,20 @@ export default function EntryModal({ entry, type, user }) {
          </Button>
             : null;
 
+   const deleteButton =
+   type === "delete" ? <IconButton onClick={handleDelete}>
+      <DeleteIcon />
+   </IconButton>
+      : type === "delete" ? <Button variant="contained" onClick={handleDelete}>
+         Delete entry
+      </Button>
+         : null;
+
    const actionButtons =
       type === "edit" ?
          <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
+            <Button variant="contained" onClick={handleEdit}>Save</Button>
          </DialogActions>
          : type === "add" ?
             <DialogActions>
@@ -97,6 +124,7 @@ export default function EntryModal({ entry, type, user }) {
 
    return (
       <div>
+         {deleteButton}
          {openButton}
          <Dialog open={open} onClose={handleClose}>
             <DialogTitle>{type === "edit" ? name : "Add Entry"}</DialogTitle>
