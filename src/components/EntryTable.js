@@ -12,6 +12,7 @@ import { getCategory } from '../utils/categories';
 // Table component that displays entries on home screen
 
 export default function EntryTable({ entries }) {
+   console.log("here")
    return (
       <TableContainer component={Paper}>
          <Table sx={{ minWidth: 650 }} aria-label="simple table">

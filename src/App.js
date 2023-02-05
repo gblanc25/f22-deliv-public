@@ -24,6 +24,8 @@ import { mainListItems } from './components/listItems';
 import { db, SignInScreen } from './utils/firebase';
 import { emptyEntry } from './utils/mutations';
 import { getDocs } from "firebase/firestore";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 
@@ -167,18 +169,40 @@ export default function App() {
     link.click();
   }
 
+  const recallMain = () => {
+    const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
+    onSnapshot(q, (snapshot) => {
+      // Set Entries state variable to the current snapshot
+      // For each entry, appends the document ID as an object property along with the existing document data
+      setEntries(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+    })
+  }
+
   function mainContent() {
+    var tempEntries = entries.filter(entry => document.getElementById(entry.category).checked);
     if (isSignedIn) {
       return (
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <Stack direction="row" spacing={3}>
               <EntryModal entry={emptyEntry} type="add" user={currentUser} />
               <Button onClick={exportData}>Export Links</Button>
             </Stack>
           </Grid>
+          <Grid item xs={8}>
+            <Box display="flex" justifyContent="flex-end">
+                <FormControlLabel align="flex-end" control={<Checkbox color="default" 
+                  defaultChecked id="0" onChange={recallMain}/>} label="Default" />
+                <FormControlLabel align="end" control={<Checkbox color="secondary" 
+                  defaultChecked id="1" onChange={recallMain}/>} label="Startup" />
+                <FormControlLabel align="end" control={<Checkbox color="success" 
+                  defaultChecked id="2" onChange={recallMain}/>} label="Nonprofit" />
+                <FormControlLabel align="end" control={<Checkbox 
+                  defaultChecked id="3" onChange={recallMain}/>} label="Misc" />
+            </Box>
+          </Grid>
           <Grid item xs={12}>
-            <EntryTable entries={entries} />
+            <EntryTable entries={tempEntries} />
           </Grid>
         </Grid>
       )
@@ -234,7 +258,9 @@ export default function App() {
               sx={{
                 marginTop: '5px',
                 marginBottom: '5px',
-                display: isSignedIn ? 'inline' : 'none'
+                display: isSignedIn ? 'inline' : 'none',
+                backgroundColor: 'white',
+                color: 'black'
               }}
               onClick={() => firebase.auth().signOut()}
             >
