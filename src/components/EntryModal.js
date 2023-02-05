@@ -31,8 +31,6 @@ export default function EntryModal({ entry, type, user }) {
 
    // State variables for modal status
 
-   // TODO: For editing, you may have to add and manage another state variable to check if the entry is being edited.
-
    const [open, setOpen] = useState(false);
    const [name, setName] = useState(entry.name);
    const [link, setLink] = useState(entry.link);
@@ -85,11 +83,8 @@ export default function EntryModal({ entry, type, user }) {
       handleClose();
    };
 
-   // TODO: Add Edit Mutation Handler
-
    // Button handlers for modal opening and inside-modal actions.
    // These buttons are displayed conditionally based on if adding or editing/opening.
-   // TODO: You may have to edit these buttons to implement editing/deleting functionality.
 
    const openButton =
       type === "edit" ? <IconButton onClick={handleClickOpen}>
@@ -100,6 +95,7 @@ export default function EntryModal({ entry, type, user }) {
          </Button>
             : null;
 
+   // Define new delete type associated with visual icon
    const deleteButton =
    type === "delete" ? <IconButton onClick={handleDelete}>
       <DeleteIcon />

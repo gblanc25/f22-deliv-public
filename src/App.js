@@ -130,10 +130,6 @@ export default function App() {
 
   // Main content of homescreen. This is displayed conditionally from user auth status
 
-  const exportData = () => {
-    getLinks();
-  };
-
   var textFile = null,
   makeTextFile = function (text) {
     var data = new Blob([text], {type: 'text/plain'});
@@ -151,6 +147,10 @@ export default function App() {
   };
 
   var links = "";
+  
+  const exportData = () => {
+    getLinks();
+  };
 
   async function getLinks() {
     const q = currentUser?.uid ? query(collection(db, "entries"), where("userid", "==", currentUser.uid)) : collection(db, "entries");
@@ -158,8 +158,9 @@ export default function App() {
     links = "";
     querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
-    links += (doc.id, " => ", doc.data().link) + '\n';
-    });
+    if (doc.data().link) {
+      links += (doc.id, " => ", doc.data().link) + '\n';
+    }});
 
     var url = makeTextFile(links);
 
